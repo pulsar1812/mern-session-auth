@@ -1,23 +1,27 @@
 import express from 'express';
-import Joi from '@hapi/joi';
 
 import User from '../models/User';
 import { signUp } from '../validations/user';
 
-const userRoutes = express.Router();
+const userRouter = express.Router();
 
-userRoutes.post('', async (req, res) => {
+userRouter.post('', async (req, res) => {
   try {
     const { username, email, password } = req.body;
-    await Joi.validate({ username, email, password }, signUp);
+
+    const result = signUp.validate({ username, email, password });
+
+    if (result.error) {
+      return res.json(result.error);
+    }
 
     const newUser = new User({ username, email, password });
     await newUser.save();
 
-    res.send({ userId: newUser.id, username });
+    res.json({ userId: newUser.id, username });
   } catch (err) {
     res.status(400).send(err);
   }
 });
 
-export default userRoutes;
+export default userRouter;

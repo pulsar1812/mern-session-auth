@@ -32,7 +32,7 @@ UserSchema.pre('save', function() {
 });
 
 UserSchema.statics.doesNotExist = async function(field) {
-  return (await this.where(field).countDocument()) === 0;
+  return (await this.where(field).countDocuments()) === 0;
 };
 
 UserSchema.methods.comparePasswords = function(password) {
