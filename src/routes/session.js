@@ -1,0 +1,53 @@
+import express from 'express';
+
+import User from '../models/User';
+import { signIn } from '../validations/user';
+import { parseError, sessionizeUser } from '../util/helpers';
+import { SESS_NAME } from '../config';
+
+const sessionRouter = express.Router();
+
+sessionRouter.post('', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const result = signIn.validate({ email, password });
+
+    const user = await User.findOne({ email });
+    if (user && user.comparePasswords(password)) {
+      const sessionUser = sessionizeUser(user);
+
+      req.session.user = sessionUser;
+      res.send(sessionUser);
+    } else {
+      throw new Error('Invalid login credentials');
+    }
+  } catch (err) {
+    res.status(401).send(parseError(err));
+  }
+});
+
+sessionRouter.delete('', (req, res) => {
+  try {
+    const user = req.session.user;
+    if (user) {
+      session.destroy(err => {
+        if (err) throw err;
+
+        res.clearCookie(SESS_NAME);
+        res.send(user);
+      });
+    } else {
+      throw new Error('Something went wrong');
+    }
+  } catch (err) {
+    res.status(422).send(parseError(err));
+  }
+});
+
+sessionRouter.get('', (req, res) => {
+  const user = req.session.user;
+
+  res.send({ user });
+});
+
+export default sessionRouter;
