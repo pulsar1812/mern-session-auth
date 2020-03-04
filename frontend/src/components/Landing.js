@@ -1,13 +1,15 @@
 import React, { Fragment } from 'react';
 import { Link } from 'react-router-dom';
 
-const Welcome = () => (
+const Landing = () => (
   <Fragment>
     <h1>Welcome!</h1>
     <Link to='/login'>Login</Link>
+    <br />
     <Link to='/signup'>Signup</Link>
+    <br />
     <Link to='/dashboard'>Dashboard</Link>
   </Fragment>
 );
 
-export default Welcome;
+export default Landing;

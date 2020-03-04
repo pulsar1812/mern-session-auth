@@ -1,23 +1,13 @@
-export const signup = user => {
-  fetch('api/users', {
-    method: 'POST',
-    body: JSON.stringify(user),
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  });
-};
+import axios from 'axios';
 
-export const login = user => {
-  fetch('api/session', {
-    method: 'POST',
-    body: JSON.stringify(user),
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  });
-};
-
-export const logout = () => {
-  fetch('api/session', { method: 'DELETE' });
+export const checkLoggedIn = async () => {
+  const res = await axios.get('/api/session');
+  const { user } = res.data;
+  let preloadedState = {};
+  if (user) {
+    preloadedState = {
+      session: user
+    };
+  }
+  return preloadedState;
 };

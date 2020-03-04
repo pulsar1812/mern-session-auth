@@ -4,7 +4,9 @@ import {
   RECEIVE_ERRORS
 } from '../actions/types';
 
-export default (state = '', { message, type }) => {
+export default (state = '', action) => {
+  const { type, payload } = action;
+
   Object.freeze(state);
   switch (type) {
     case RECEIVE_ERRORS:

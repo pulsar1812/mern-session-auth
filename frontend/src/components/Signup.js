@@ -1,36 +1,52 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useState } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
+
 import { signup } from '../actions/session';
 
-const Signup = ({ errors, signup }) => {
-  const handleSubmit = e => {
-    e.preventDefault();
-    const user = {
-      username: e.target[0].value,
-      email: e.target[1].value,
-      password: e.target[2].value
-    };
-    signup(user);
+const Signup = ({ signup }) => {
+  const [formData, setFormData] = useState({
+    username: '',
+    email: '',
+    password: ''
+  });
+
+  const { username, email, password } = formData;
+
+  const handleChange = event => {
+    setFormData({ ...formData, [event.target.name]: event.target.value });
+  };
+
+  const handleSubmit = event => {
+    event.preventDefault();
+    signup({ username, email, password });
   };
 
   return (
     <Fragment>
       <h1>Signup</h1>
-      <p>{errors}</p>
       <form onSubmit={handleSubmit}>
-        <label>
-          Username:
-          <input type='text' name='username' />
-        </label>
-        <label>
-          Email:
-          <input type='email' name='email' />
-        </label>
-        <label>
-          Password:
-          <input type='password' name='password' />
-        </label>
+        <input
+          type='text'
+          placeholder='Username'
+          name='username'
+          value={username}
+          onChange={handleChange}
+        />
+        <input
+          type='email'
+          placeholder='Email Address'
+          name='email'
+          value={email}
+          onChange={handleChange}
+        />
+        <input
+          type='password'
+          placeholder='Password'
+          name='password'
+          value={password}
+          onChange={handleChange}
+        />
         <input type='submit' value='Submit' />
       </form>
       <Link to='/login'>Login</Link>
@@ -38,12 +54,12 @@ const Signup = ({ errors, signup }) => {
   );
 };
 
-const mapStateToProps = ({ errors }) => ({
-  errors
-});
+// const mapStateToProps = ({ errors }) => ({
+//   errors
+// });
 
-const mapDispatchToProps = dispatch => ({
-  signup: user => dispatch(signup(user))
-});
+// const mapDispatchToProps = dispatch => ({
+//   signup: user => dispatch(signup(user))
+// });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Signup);
+export default connect(null, { signup })(Signup);

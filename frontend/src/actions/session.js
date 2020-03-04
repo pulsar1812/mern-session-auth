@@ -1,56 +1,61 @@
-import * as apiUtil from '../util/session';
+import axios from 'axios';
+
 import {
   RECEIVE_CURRENT_USER,
   LOGOUT_CURRENT_USER,
-  RECEIVE_ERRORS,
-  CLEAR_ERRORS
+  RECEIVE_ERRORS
 } from './types';
 
-const receiveCurrentUser = user => ({
-  type: RECEIVE_CURRENT_USER,
-  user
-});
+// Login
+export const login = ({ email, password }) => async dispatch => {
+  const config = {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  };
 
-const logoutCurrentUser = () => ({
-  type: LOGOUT_CURRENT_USER
-});
+  const body = JSON.stringify({ email, password });
 
-const receiveErrors = ({ message }) => ({
-  type: RECEIVE_ERRORS,
-  message
-});
+  try {
+    const res = await axios.post('/api/session', body, config);
 
-const clearErrors = () => ({
-  type: CLEAR_ERRORS
-});
-
-export const login = user => async dispatch => {
-  const res = await apiUtil.login(user);
-  const data = await res.json();
-
-  if (res.ok) {
-    return dispatch(receiveCurrentUser(data));
+    dispatch({
+      type: RECEIVE_CURRENT_USER,
+      payload: res.data
+    });
+  } catch (err) {
+    dispatch({
+      type: RECEIVE_ERRORS
+    });
   }
-  return dispatch(receiveErrors(data));
 };
 
-export const signup = user => async dispatch => {
-  const res = await apiUtil.signup(user);
+// Signup
+export const signup = ({ username, email, password }) => async dispatch => {
+  const config = {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  };
 
-  const data = await res.json();
+  const body = JSON.stringify({ username, email, password });
 
-  if (res.ok) {
-    return dispatch(receiveCurrentUser(data));
+  try {
+    const res = await axios.post('/api/users', body, config);
+
+    dispatch({
+      type: RECEIVE_CURRENT_USER,
+      payload: res.data
+    });
+  } catch (err) {
+    dispatch({
+      type: RECEIVE_ERRORS
+    });
   }
-  return dispatch(receiveErrors(data));
 };
 
-export const logout = () => async dispatch => {
-  const res = await apiUtil.logout();
-  const data = await res.json();
-
-  if (res.ok) {
-    return dispatch(logoutCurrentUser());
-  }
-  return dispatch(receiveErrors(data));
+// Logout
+export const logout = () => dispatch => {
+  axios.delete('/api/session');
+  dispatch({ type: LOGOUT_CURRENT_USER });
 };

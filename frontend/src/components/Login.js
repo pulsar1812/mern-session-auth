@@ -1,31 +1,44 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useState } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
+
 import { login } from '../actions/session';
 
-const Login = ({ errors, login }) => {
-  const handleSubmit = e => {
-    e.preventDefault();
-    const user = {
-      email: e.target[0].value,
-      password: e.target[1].value
-    };
-    login(user);
+const Login = ({ login }) => {
+  const [formData, setFormData] = useState({
+    email: '',
+    password: ''
+  });
+
+  const { email, password } = formData;
+
+  const handleChange = event => {
+    setFormData({ ...formData, [event.target.name]: event.target.value });
+  };
+
+  const handleSubmit = event => {
+    event.preventDefault();
+    login({ email, password });
   };
 
   return (
     <Fragment>
       <h1>Login</h1>
-      <p>{errors}</p>
       <form onSubmit={handleSubmit}>
-        <label>
-          Email:
-          <input type='email' name='email' />
-        </label>
-        <label>
-          Password:
-          <input type='password' name='password' />
-        </label>
+        <input
+          type='email'
+          placeholder='Email Address'
+          name='email'
+          value={email}
+          onChange={handleChange}
+        />
+        <input
+          type='password'
+          placeholder='Password'
+          name='password'
+          value={password}
+          onChange={handleChange}
+        />
         <input type='submit' value='Submit' />
       </form>
       <Link to='/signup'>Signup</Link>
@@ -33,12 +46,12 @@ const Login = ({ errors, login }) => {
   );
 };
 
-const mapStateToProps = ({ errors }) => ({
-  errors
-});
+// const mapStateToProps = ({ errors }) => ({
+//   errors
+// });
 
-const mapDispatchToProps = dispatch => ({
-  login: user => dispatch(login(user))
-});
+// const mapDispatchToProps = dispatch => ({
+//   login: user => dispatch(login(user))
+// });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Login);
+export default connect(null, { login })(Login);
